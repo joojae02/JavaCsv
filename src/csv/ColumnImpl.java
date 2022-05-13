@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ColumnImpl implements Column {
-
+    private String header;
     private List<String> list;
-    public ColumnImpl(List<String> list)
+    public ColumnImpl(List<String> list, String header)
     {
+        this.header = header;
         this.list = list;
     }
     public String getHeader()
     {
-        return list.get(0);
+        return header;
     }
 
     @Override
@@ -27,17 +28,17 @@ class ColumnImpl implements Column {
 
     @Override
     public void setValue(int index, String value) {
-
+        list.set(index,value);
     }
 
     @Override
     public <T extends Number> void setValue(int index, T value) {
-
+        list.set(index,value.toString());
     }
 
     @Override
     public int count() {
-        return list.size() - 1;
+        return list.size();
     }
 
     @Override
@@ -48,7 +49,10 @@ class ColumnImpl implements Column {
 
     @Override
     public boolean isNumericColumn() {
-        return false;
+        if(getNumericCount() == list.size())
+            return true;
+        else
+            return false;
     }
 
     @Override
@@ -64,8 +68,18 @@ class ColumnImpl implements Column {
 
     @Override
     public long getNumericCount() {
-
-        return 0;
+        int count = 0;
+        for(String s: list)
+        {
+            if(s.isEmpty() != true) {
+                try {
+                    double d = Double.parseDouble(s);
+                    count++;
+                } catch (NumberFormatException e) {
+                }
+            }
+        }
+        return count;
     }
 
     @Override

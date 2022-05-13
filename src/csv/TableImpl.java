@@ -20,7 +20,7 @@ class TableImpl implements Table {
         }
         for(int i = 0; i < tmpList.size(); i++)
         {
-            ColumnImpl column = new ColumnImpl(tmpList.get(i));
+            ColumnImpl column = new ColumnImpl(tmpList.get(i),tmpList.get(0).get(i));
             columnList.add(column);
         }
         for(int i = 0; i < tmpList.size();i++)
@@ -35,12 +35,16 @@ class TableImpl implements Table {
 
     @Override
     public String toString() {
-        String result = "# | ";
+        String result = "<csv.Table@" + this.hashCode() + ">\n"
+        + "RangeIndex: " + columnList.get(0).count() +"0 to " + columnList.get(0).count() +"\n"
+        + "Data columns" + "(total " +columnList.size() + "columns) :\n"
+        + String.format(" %s |%11s | %6s %8s | %6s", "#","Columns", "Count", "Non-Null","Dtype");
         for(int i = 0; i< columnList.size(); i++)
         {
-            result +=
+            result += String.format(" %d |%11s | %6s %8s | %6s", i,columnList.get(i).getHeader(), columnList.get(i).count(),
+                    (columnList.get(i).count() != columnList.get(i).getNullCount()) ? "non-null":"null",);
         }
-        return "\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        return result;
     }
 
     @Override
@@ -52,12 +56,12 @@ class TableImpl implements Table {
             for(int j = 0; j < columnList.size();  j++)
             {
                 if(columnList.get(j).getValue(i).isEmpty())
-                    tmp[j] = "null";
+                    tmp[j] = null;
                 else
                     tmp[j] = columnList.get(j).getValue(i);
             }
 
-            System.out.println(String.format("%4s| %4s| %4s| %60s| %6s| %4s| %4s| %4s| %20s| %15s| %20s| %4s|",
+            System.out.println(String.format("%11s| %8s| %6s| %60s| %6s| %4s| %6s| %6s| %20s| %15s| %20s| %8s|",
                     tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9],tmp[10],tmp[11] ));
         }
     }
