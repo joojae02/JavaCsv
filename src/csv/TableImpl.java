@@ -38,10 +38,10 @@ class TableImpl implements Table {
         String result = "<csv.Table@" + this.hashCode() + ">\n"
         + "RangeIndex: " + columnList.get(0).count() +"0 to " + columnList.get(0).count() +"\n"
         + "Data columns" + "(total " +columnList.size() + "columns) :\n"
-        + String.format(" %s |%11s | %6s %8s | %6s", "#","Columns", "Count", "Non-Null","Dtype");
+        + String.format(" %s |%11s | %6s %8s | %6s\n", "#","Columns", "Count", "Non-Null","Dtype");
         for(int i = 0; i< columnList.size(); i++)
         {
-            result += String.format(" %d |%11s | %6s %8s | %6s", i,columnList.get(i).getHeader(), columnList.get(i).count(),
+            result += String.format(" %d |%11s | %6s %8s | %6s\n", i,columnList.get(i).getHeader(), columnList.get(i).count(),
                     (columnList.get(i).count() != columnList.get(i).getNullCount()) ? "non-null":"null",);
         }
         return result;
