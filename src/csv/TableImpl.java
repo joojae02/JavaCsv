@@ -10,39 +10,38 @@ class TableImpl implements Table {
     public TableImpl(List<List<String>> list)
     {
         List<List<String>> tmpList = new ArrayList<List<String>>();
-
-        for(int i = 0; i < list.get(0).size();i++)// ~891
+        for(int i = 0; i < list.get(0).size();i++)//
         {
             List<String> tmp = new ArrayList<String>();
-            for(int j = 0; j < list.size(); j++)
+            for(int j = 1; j < list.size(); j++)
                 tmp.add(list.get(j).get(i));
             tmpList.add(tmp);
         }
-        for(int i = 0; i < tmpList.size(); i++)
+        for(int i = 0; i < list.get(0).size(); i++)
         {
-            ColumnImpl column = new ColumnImpl(tmpList.get(i),tmpList.get(0).get(i));
+            ColumnImpl column = new ColumnImpl(tmpList.get(i),list.get(0).get(i));
             columnList.add(column);
         }
-        for(int i = 0; i < tmpList.size();i++)
-        {
-            for(int j = 0; j < tmpList.get(i).size(); j++)
-            {
-                System.out.print(tmpList.get(i).get(j) + " / ");
-            }
-            System.out.println();
-        }
+//        for(int i = 0; i < tmpList.size();i++)
+//        {
+//            for(int j = 0; j < tmpList.get(i).size(); j++)
+//            {
+//                System.out.print(tmpList.get(i).get(j) + " / ");
+//            }
+//            System.out.println();
+//        }
     }
 
     @Override
     public String toString() {
-        String result = "<csv.Table@" + this.hashCode() + ">\n"
-        + "RangeIndex: " + columnList.get(0).count() +"0 to " + columnList.get(0).count() +"\n"
+        String result = this.getClass() +"@" + Integer.toHexString(this.hashCode()) + ">\n"
+        + "RangeIndex: " + columnList.get(0).count() +" entries, 0 to " + (columnList.get(0).count() - 1) +"\n"
         + "Data columns" + "(total " +columnList.size() + "columns) :\n"
         + String.format(" %s |%11s | %6s %8s | %6s\n", "#","Columns", "Count", "Non-Null","Dtype");
         for(int i = 0; i< columnList.size(); i++)
         {
             result += String.format(" %d |%11s | %6s %8s | %6s\n", i,columnList.get(i).getHeader(), columnList.get(i).count(),
-                    (columnList.get(i).count() != columnList.get(i).getNullCount()) ? "non-null":"null",);
+                    (columnList.get(i).count() != columnList.get(i).getNullCount()) ? "non-null":"null",columnList.get(i).getType());
         }
         return result;
     }
@@ -50,6 +49,10 @@ class TableImpl implements Table {
     @Override
     public void print() {
 
+        for(int i = 0; i< columnList.size(); i++)
+            System.out.printf(String.format("%%%ds|",columnList.get(i).getLength()),columnList.get(i).getHeader());
+
+        System.out.println();
         for(int i = 0; i< columnList.get(0).count(); i++)
         {
             String [] tmp = new String[columnList.size()];
@@ -59,16 +62,40 @@ class TableImpl implements Table {
                     tmp[j] = null;
                 else
                     tmp[j] = columnList.get(j).getValue(i);
+                System.out.printf(String.format("%%%ds|",columnList.get(j).getLength()),tmp[j]);
             }
-
-            System.out.println(String.format("%11s| %8s| %6s| %60s| %6s| %4s| %6s| %6s| %20s| %15s| %20s| %8s|",
-                    tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9],tmp[10],tmp[11] ));
+            System.out.println();
         }
     }
 
     @Override
     public Table getStats() {
-        return null;
+
+        List<List<String>> tmpList = new ArrayList<>();
+        for(int i = 0; i< 9; i++)
+        {
+            tmpList.add(new ArrayList<>());
+        }
+        tmpList.get(0).add("");tmpList.get(1).add("count");tmpList.get(2).add("mean");tmpList.get(3).add("std");tmpList.get(4).add("min");
+        tmpList.get(5).add("25%");tmpList.get(6).add("50%");tmpList.get(7).add("75%");tmpList.get(8).add("max");
+        for(int i = 0; i< columnList.size(); i++) {
+            try{
+                tmpList.get(2).add(String.valueOf(columnList.get(i).getMean()));
+                tmpList.get(3).add(String.valueOf(columnList.get(i).getStd()));
+                tmpList.get(4).add(String.valueOf(columnList.get(i).getNumericMin()));
+                tmpList.get(5).add(String.valueOf(columnList.get(i).getQ1()));
+                tmpList.get(6).add(String.valueOf(columnList.get(i).getMedian()));
+                tmpList.get(7).add(String.valueOf(columnList.get(i).getQ3()));
+                tmpList.get(8).add(String.valueOf(columnList.get(i).getNumericMax()));
+                tmpList.get(0).add(columnList.get(i).getHeader());
+                tmpList.get(1).add(String.valueOf(columnList.get(i).getNumericCount()));
+            }
+            catch (NumberFormatException e) {
+            }
+        }
+
+        Table states = new TableImpl(tmpList);
+        return states;
     }
 
     @Override
