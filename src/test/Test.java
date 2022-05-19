@@ -23,7 +23,7 @@ public class Test {
 //        table.print();
 
 //        4) 테이블의 컬럼별 통계량을 출력한다.
-       table.getStats().print();
+///       table.getStats().print();
 
 //        5) 처음 5줄 출력 (새 테이블)
 //        table.head().print();
@@ -36,7 +36,7 @@ public class Test {
 //        System.out.println("identity test for head(n): " + (table.equals(anotherTable) ? "Fail" : "Pass"));
 
 //        7) 마지막 5줄 출력 (새 테이블)
-//        table.tail().print();
+//         table.tail().print();
 //        anotherTable = table.tail();
 //        System.out.println("identity test for tail(): " + (table.equals(anotherTable) ? "Fail" : "Pass"));
 

@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.function.Predicate;
 
 class TableImpl implements Table {
-    private List<ColumnImpl> columnList = new ArrayList<ColumnImpl>();
+    private List<ColumnImpl> columnList = new ArrayList<>();
 
     public TableImpl(List<List<String>> list)
     {
-        List<List<String>> tmpList = new ArrayList<List<String>>();
+        List<List<String>> tmpList = new ArrayList<>();
         for(int i = 0; i < list.get(0).size();i++)//
         {
-            List<String> tmp = new ArrayList<String>();
+            List<String> tmp = new ArrayList<>();
             for(int j = 1; j < list.size(); j++)
                 tmp.add(list.get(j).get(i));
             tmpList.add(tmp);
@@ -40,7 +40,7 @@ class TableImpl implements Table {
         + String.format(" %s |%11s | %6s %8s | %6s\n", "#","Columns", "Count", "Non-Null","Dtype");
         for(int i = 0; i< columnList.size(); i++)
         {
-            result += String.format(" %d |%11s | %6s %8s | %6s\n", i,columnList.get(i).getHeader(), columnList.get(i).count(),
+            result += String.format(" %d | %11s | %6s %8s | %6s\n", i,columnList.get(i).getHeader(), columnList.get(i).count(),
                     (columnList.get(i).count() != columnList.get(i).getNullCount()) ? "non-null":"null",columnList.get(i).getType());
         }
         return result;
@@ -50,7 +50,7 @@ class TableImpl implements Table {
     public void print() {
 
         for(int i = 0; i< columnList.size(); i++)
-            System.out.printf(String.format("%%%ds|",columnList.get(i).getLength()),columnList.get(i).getHeader());
+            System.out.printf(String.format(" %%%ds |",columnList.get(i).getLength()),columnList.get(i).getHeader());
 
         System.out.println();
         for(int i = 0; i< columnList.get(0).count(); i++)
@@ -62,7 +62,7 @@ class TableImpl implements Table {
                     tmp[j] = null;
                 else
                     tmp[j] = columnList.get(j).getValue(i);
-                System.out.printf(String.format("%%%ds|",columnList.get(j).getLength()),tmp[j]);
+                System.out.printf(String.format(" %%%ds |",columnList.get(j).getLength()),tmp[j]);
             }
             System.out.println();
         }
@@ -76,7 +76,8 @@ class TableImpl implements Table {
         {
             tmpList.add(new ArrayList<>());
         }
-        tmpList.get(0).add("");tmpList.get(1).add("count");tmpList.get(2).add("mean");tmpList.get(3).add("std");tmpList.get(4).add("min");
+        tmpList.get(0).add("");tmpList.get(1).add("count");
+        tmpList.get(2).add("mean");tmpList.get(3).add("std");tmpList.get(4).add("min");
         tmpList.get(5).add("25%");tmpList.get(6).add("50%");tmpList.get(7).add("75%");tmpList.get(8).add("max");
         for(int i = 0; i< columnList.size(); i++) {
             try{
@@ -91,6 +92,7 @@ class TableImpl implements Table {
                 tmpList.get(1).add(String.valueOf(columnList.get(i).getNumericCount()));
             }
             catch (NumberFormatException e) {
+                System.out.println(i+ ", "+ e );
             }
         }
 
@@ -100,31 +102,78 @@ class TableImpl implements Table {
 
     @Override
     public Table head() {
-        return null;
+        return head(5);
     }
 
     @Override
     public Table head(int lineCount) {
-        return null;
+        List<List<String>> tmpList = new ArrayList<>();
+        tmpList.add(new ArrayList<>());
+        for (int i = 0; i< columnList.size(); i++)
+            tmpList.get(0).add(columnList.get(i).getHeader());
+        for (int i = 0; i< lineCount; i++)
+        {
+            List<String> tmp = new ArrayList<>();
+            for(int j = 0; j< columnList.size(); j++) {
+                tmp.add(columnList.get(j).getValue(i));
+
+            }
+            tmpList.add(tmp);
+        }
+
+        Table head = new TableImpl(tmpList);
+        return head;
     }
 
     @Override
     public Table tail() {
-        return null;
+        return tail(5);
     }
 
     @Override
     public Table tail(int lineCount) {
-        return null;
+        List<List<String>> tmpList = new ArrayList<>();
+        tmpList.add(new ArrayList<>());
+        for (int i = 0; i< columnList.size(); i++)
+            tmpList.get(0).add(columnList.get(i).getHeader());
+        int size = columnList.get(0).size();
+        for (int i = size - lineCount; i< size; i++)
+        {
+            List<String> tmp = new ArrayList<>();
+            for(int j = 0; j< columnList.size(); j++) {
+                tmp.add(columnList.get(j).getValue(i));
+
+            }
+            tmpList.add(tmp);
+        }
+        Table tail = new TableImpl(tmpList);
+        return tail;
     }
 
     @Override
     public Table selectRows(int beginIndex, int endIndex) {
-        return null;
+        List<List<String>> tmpList = new ArrayList<>();
+        tmpList.add(new ArrayList<>());
+        for (int i = 0; i< columnList.size(); i++)
+            tmpList.get(0).add(columnList.get(i).getHeader());
+
+        for (int i = beginIndex; i< endIndex; i++)
+        {
+            List<String> tmp = new ArrayList<>();
+            for(int j = 0; j< columnList.size(); j++) {
+                tmp.add(columnList.get(j).getValue(i));
+
+            }
+            tmpList.add(tmp);
+        }
+        Table select = new TableImpl(tmpList);
+        return select;
+
     }
 
     @Override
     public Table selectRowsAt(int... indices) {
+
         return null;
     }
 

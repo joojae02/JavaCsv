@@ -45,6 +45,9 @@ class ColumnImpl implements Column {
     public int count() {
         return list.size() - (int)getNullCount();
     }
+    public int size() {
+        return list.size();
+    }
 
     @Override
     public void print() {
@@ -57,6 +60,8 @@ class ColumnImpl implements Column {
      for(String s: list)
      {
          int tmp = s.length();
+         if(s.isEmpty())
+             tmp = 4;
          if(tmp > maxLength)
              maxLength = tmp;
      }
@@ -130,34 +135,48 @@ class ColumnImpl implements Column {
     public double getNumericMin(){
         if(getNumericCount() == 0)
             throw new NumberFormatException();
-        double min = Double.parseDouble(list.get(0));
-        for(String s: list)
-        {
-            if(s.isEmpty() != true) {
-                double tmp = Double.parseDouble(s);
-                if (min > tmp)
-                    min = tmp;
+        for(int i = 0 ; ;i++) {
+            try {
+                double min = Double.parseDouble(list.get(i));
+                for (String s : list) {
+                    if (s.isEmpty() != true) {
+                        try {
+                            double tmp = Double.parseDouble(s);
+                            if (min > tmp)
+                                min = tmp;
+                        } catch (NumberFormatException e) {
+                        }
+                    }
+                }
+                return min;
             }
+            catch (NumberFormatException e)
+            {}
         }
-        return min;
     }
 
     @Override
     public double getNumericMax(){
         if(getNumericCount() == 0)
             throw new NumberFormatException();
-        double max = Double.parseDouble(list.get(0));
-        for(String s: list)
-        {
-            if(s.isEmpty() != true) {
-                    double tmp = Double.parseDouble(s);
-                    if (max < tmp)
-                        max = tmp;
-
+        for(int i = 0 ; ;i++) {
+            try {
+                double max = Double.parseDouble(list.get(i));
+                for (String s : list) {
+                    if (s.isEmpty() != true) {
+                        try {
+                            double tmp = Double.parseDouble(s);
+                            if (max < tmp)
+                                max = tmp;
+                        } catch (NumberFormatException e) {
+                        }
+                    }
+                }
+                return max;
             }
-
+            catch (NumberFormatException e)
+            {}
         }
-        return max;
     }
 
     @Override
@@ -167,10 +186,16 @@ class ColumnImpl implements Column {
         double sum = 0;
         for(String s: list)
         {
-            sum += Double.parseDouble(s);
+            if(s.isEmpty() != true)
+            {
+                try{
+                    sum += Double.parseDouble(s);
+                }
+                catch (NumberFormatException e) {}
+            }
         }
 
-        return sum /(double)getNumericCount();
+        return Math.round(sum /(double)getNumericCount()* 1000000 ) / 1000000.0;
     }
 
     @Override
@@ -179,71 +204,55 @@ class ColumnImpl implements Column {
             throw new NumberFormatException();
         double mean = getMean();
         double sum = 0;
+
         for(String s: list)
         {
-            sum += Math.sqrt(Double.parseDouble(s) - mean);
+            if(s.isEmpty() != true)
+            {
+                try{
+                    sum += Math.pow(Double.parseDouble(s) - mean,2);
+                }
+                catch (NumberFormatException e) {}
+            }
         }
-        return sum /(double)getNumericCount();
+        return Math.round( Math.sqrt(sum /(double)getNumericCount()) * 1000000 ) / 1000000.0;
+    }
+
+    public double q1q2q3(double q)
+    {
+        if(getNumericCount() == 0)
+            throw new NumberFormatException();
+        List<Double> tmp = new ArrayList<>();
+        for(String s: list)
+        {
+            try{
+                if(s.isEmpty() != true) {
+                    tmp.add(Double.parseDouble(s));
+                }
+            }
+            catch (NumberFormatException e) {
+            }
+        }
+        Collections.sort(tmp);
+        double index = q * (tmp.size() - 1);
+        int low = (int)Math.floor(index);
+        double r = tmp.get(low) + (index - low) * (tmp.get(low + 1) - tmp.get(low));
+        return Math.round((r * 1000000)) / 1000000.0;
     }
 
     @Override
     public double getQ1() {
-        if(getNumericCount() == 0)
-            throw new NumberFormatException();
-        List<Double> tmp = new ArrayList<>();
-        for(String s: list)
-        {
-            try{
-                if(s.isEmpty() != true) {
-                    tmp.add(Double.parseDouble(s));
-                }
-            }
-            catch (NumberFormatException e) {
-            }
-        }
-        Collections.sort(tmp);
-        return tmp.get((tmp.size() / 2) / 2  + 1);
+        return q1q2q3(0.25);
     }
 
     @Override
     public double getMedian() {
-        if(getNumericCount() == 0)
-            throw new NumberFormatException();
-        List<Double> tmp = new ArrayList<>();
-        for(String s: list)
-        {
-            try{
-                if(s.isEmpty() != true) {
-                    tmp.add(Double.parseDouble(s));
-                }
-            }
-            catch (NumberFormatException e) {
-            }
-        }
-        Collections.sort(tmp);
-        if(tmp.size() % 2 == 0)
-            return (tmp.get(tmp.size() / 2) + tmp.get(tmp.size() / 2 + 1)) / 2.0;
-        else
-            return tmp.get(tmp.size() / 2 + 1);
+        return q1q2q3(0.5);
     }
 
     @Override
     public double getQ3() {
-        if(getNumericCount() == 0)
-            throw new NumberFormatException();
-        List<Double> tmp = new ArrayList<>();
-        for(String s: list)
-        {
-            try{
-                if(s.isEmpty() != true) {
-                    tmp.add(Double.parseDouble(s));
-                }
-            }
-            catch (NumberFormatException e) {
-            }
-        }
-        Collections.sort(tmp);
-        return tmp.get(tmp.size() - ((tmp.size() / 2) / 2  + 1));
+        return q1q2q3(0.75);
     }
 
     @Override
