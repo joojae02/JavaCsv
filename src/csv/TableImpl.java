@@ -173,9 +173,22 @@ class TableImpl implements Table {
 
     @Override
     public Table selectRowsAt(int... indices) {
+        List<List<String>> tmpList = new ArrayList<>();
+        tmpList.add(new ArrayList<>());
+        for (int i = 0; i< columnList.size(); i++)
+            tmpList.get(0).add(columnList.get(i).getHeader());
 
-        return null;
-    }
+        for (int i : indices)
+        {
+            List<String> tmp = new ArrayList<>();
+            for(int j = 0; j< columnList.size(); j++) {
+                tmp.add(columnList.get(j).getValue(i));
+
+            }
+            tmpList.add(tmp);
+        }
+        Table select = new TableImpl(tmpList);
+        return select;    }
 
     @Override
     public Table selectColumns(int beginIndex, int endIndex) {
