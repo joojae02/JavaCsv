@@ -192,12 +192,42 @@ class TableImpl implements Table {
 
     @Override
     public Table selectColumns(int beginIndex, int endIndex) {
-        return null;
+        List<List<String>> tmpList = new ArrayList<>();
+        tmpList.add(new ArrayList<>());
+        for (int i = beginIndex; i< endIndex; i++)
+            tmpList.get(0).add(columnList.get(i).getHeader());
+
+        for (int i = 0; i< columnList.get(beginIndex).size(); i++)
+        {
+            List<String> tmp = new ArrayList<>();
+            for(int j = beginIndex; j< endIndex; j++) {
+                tmp.add(columnList.get(j).getValue(i));
+
+            }
+            tmpList.add(tmp);
+        }
+        Table select = new TableImpl(tmpList);
+        return select;
     }
 
     @Override
     public Table selectColumnsAt(int... indices) {
-        return null;
+        List<List<String>> tmpList = new ArrayList<>();
+        tmpList.add(new ArrayList<>());
+        for (int i : indices)
+            tmpList.get(0).add(columnList.get(i).getHeader());
+
+        for (int i = 0; i< columnList.get(indices[0]).size(); i++)
+        {
+            List<String> tmp = new ArrayList<>();
+            for(int j: indices) {
+                tmp.add(columnList.get(j).getValue(i));
+
+            }
+            tmpList.add(tmp);
+        }
+        Table select = new TableImpl(tmpList);
+        return select;
     }
 
     @Override
@@ -207,6 +237,10 @@ class TableImpl implements Table {
 
     @Override
     public Table sort(int byIndexOfColumn, boolean isAscending, boolean isNullFirst) {
+        if(isAscending)
+        {
+
+        }
         return null;
     }
 
