@@ -66,7 +66,7 @@ public class Test {
 //        System.out.println("identity test for selectColumnsAt(indices): " + (table.equals(anotherTable) ? "Fail" : "Pass"));
 
 //        11) 테이블을 기준 열인덱스(3)로 정렬한다. 이 때, 오름차순(true), null값은 나중에(false)(원본 테이블 정렬)
-//        table.sort(5, true, false).print();
+        table.sort(5, true, false).print();
 //        anotherTable = table.sort(5, true, false);
 //        System.out.println("identity test for sort(index, asc, nullOrder): " + (!table.equals(anotherTable) ? "Fail" : "Pass"));
 

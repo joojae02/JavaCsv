@@ -15,6 +15,7 @@ class ColumnImpl implements Column {
         this.header = header;
         this.list = list;
         findType();
+
     }
     public String getHeader()
     {
@@ -43,10 +44,10 @@ class ColumnImpl implements Column {
 
     @Override
     public int count() {
-        return list.size() - (int)getNullCount();
-    }
-    public int size() {
         return list.size();
+    }
+    public int getSize() {
+        return list.size() - (int)getNullCount();
     }
 
     @Override
