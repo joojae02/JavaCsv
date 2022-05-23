@@ -71,7 +71,7 @@ public class Test {
 //        System.out.println("identity test for sort(index, asc, nullOrder): " + (!table.equals(anotherTable) ? "Fail" : "Pass"));
 
 //        12) 테이블을 기준 열인덱스(3)로 정렬한다. 이 때, 내림차순(false), null값은 앞에(true)(새 테이블)
-        CSVs.sort(table, 10, false, true).print();
+//        CSVs.sort(table, 10, false, true).print();
 //        anotherTable = CSVs.sort(table, 10, false, true);
 //        System.out.println("identity test for CSVs.sort(index, asc, nullOrder): " + (table.equals(anotherTable) ? "Fail" : "Pass"));
 

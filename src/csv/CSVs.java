@@ -20,7 +20,7 @@ public class CSVs {
                     tmp[i] = tmp[i].replaceAll("^\"|\"$", "");
                     tmp[i] = tmp[i].replaceAll("\"\"", "\"");
                 }
-                System.out.println();
+
                 List<String> tmpList = new ArrayList<String>(Arrays.asList(tmp));
                 list.add((tmpList));
             }
@@ -52,32 +52,31 @@ public class CSVs {
         for(int i = 0; i< table.getColumnCount(); i++)
             headerList.add(table.getColumn(i).getHeader());
 
-        for(int i = 0; i< table.getColumnCount(); i++)
-            oriList.add(new ArrayList<>());
-        for(int i = 0; i< table.getRowCount(); i++)
-            for(int j = 0; j< table.getColumnCount(); j++)
-                oriList.get(j).add(table.getColumn(j).getValue(i));
-        for(int i = 0; i< table.getRowCount(); i++)
+        for (int i = 0; i< table.getRowCount(); i++)
         {
-            for(int j = 0; j< table.getColumnCount(); j++)
-                System.out.print(oriList.get(i).get(j) + " ");
-            System.out.println();
+            List<String> tmp = new ArrayList<>();
+            for(int j = 0; j< table.getColumnCount(); j++) {
+                tmp.add(table.getColumn(j).getValue(i));
+            }
+            oriList.add(tmp);
         }
 
-                List<List<String>> tableList = new ArrayList<>();
+
+        List<List<String>> tableList = new ArrayList<>();
         tableList.add(headerList);
         tableList.addAll(oriList);
+
         Table resultTable = new TableImpl(tableList);
-        resultTable.print();
+
         List<Map.Entry<Integer, String>> tmpList = new LinkedList<>();
-        List<Map.Entry<Integer, String>> nulllist = new LinkedList<>();
+        List<Map.Entry<Integer, String>> nullist = new LinkedList<>();
         List<Map.Entry<Integer, String>> resultList = new LinkedList<>();
 
         for (int i = 0; i < resultTable.getColumn(byIndexOfColumn).count(); i++) {
-            Map.Entry<Integer,String> entry= new AbstractMap.SimpleEntry<Integer, String>(i, resultTable.getColumn(byIndexOfColumn).getValue(i));
+            Map.Entry<Integer,String> entry= new AbstractMap.SimpleEntry<Integer, String>(i, table.getColumn(byIndexOfColumn).getValue(i));
             if(entry.getValue().isEmpty())
             {
-                nulllist.add(entry);
+                nullist.add(entry);
             }
             else
             {
@@ -147,21 +146,22 @@ public class CSVs {
                 });
             }
         }
+
         if(isNullFirst)
         {
-            resultList.addAll(nulllist);
+            resultList.addAll(nullist);
             resultList.addAll(tmpList);
         }
         else
         {
             resultList.addAll(tmpList);
-            resultList.addAll(nulllist);
+            resultList.addAll(nullist);
         }
 
-        System.out.println(resultTable.getRowCount() +" " + resultTable.getColumnCount());
-        for(int i = 0; i< table.getColumnCount(); i++)
-            for (int j = 0; j< table.getRowCount(); j++)
-                resultTable.getColumn(i).setValue(j, oriList.get(i).get(resultList.get(j).getKey()));
+        for(int i = 0; i< resultTable.getColumnCount(); i++)
+            for (int j = 0; j< resultTable.getRowCount(); j++)
+                resultTable.getColumn(i).setValue(j, oriList.get(resultList.get(j).getKey()).get(i));
+
 
         return resultTable;
     }
@@ -170,6 +170,34 @@ public class CSVs {
      * @return 새로운 Table 객체를 반환한다. 즉, 첫 번째 매개변수 Table은 변경되지 않는다.
      */
     public static Table shuffle(Table table) {
-        return null;
+        List<List<String>> oriList = new ArrayList<>();
+        List<String> headerList = new ArrayList<>();
+        for(int i = 0; i< table.getColumnCount(); i++)
+            headerList.add(table.getColumn(i).getHeader());
+
+        for (int i = 0; i< table.getRowCount(); i++)
+        {
+            List<String> tmp = new ArrayList<>();
+            for(int j = 0; j< table.getColumnCount(); j++) {
+                tmp.add(table.getColumn(j).getValue(i));
+            }
+            oriList.add(tmp);
+        }
+        List<List<String>> tableList = new ArrayList<>();
+        tableList.add(headerList);
+        tableList.addAll(oriList);
+        Table resultTable = new TableImpl(tableList);
+
+        List<Map.Entry<Integer, String>> tmpList = new LinkedList<>();
+        for (int i = 0; i < table.getColumn(0).count(); i++) {
+            Map.Entry<Integer, String> entry = new AbstractMap.SimpleEntry<Integer, String>(i, table.getColumn(0).getValue(i));
+            tmpList.add(entry);
+        }
+        Collections.shuffle(tmpList);
+        for(int i = 0; i< resultTable.getColumnCount(); i++)
+            for (int j = 0; j< resultTable.getRowCount(); j++)
+                resultTable.getColumn(i).setValue(j, oriList.get(tmpList.get(j).getKey()).get(i));
+
+        return resultTable;
     }
 }

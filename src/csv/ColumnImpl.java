@@ -258,12 +258,35 @@ class ColumnImpl implements Column {
 
     @Override
     public boolean fillNullWithMean() {
-        return false;
+        boolean result = false;
+        if(type.equals("String")) return result;
+        double mean = getMean();
+        for(int i =0; i< count(); i++)
+        {
+            if(list.get(i).isEmpty())
+            {
+                setValue(i, String.valueOf(mean));
+                result = true;
+                type = "double";
+            }
+        }
+        return result;
     }
 
     @Override
     public boolean fillNullWithZero() {
-        return false;
+        boolean result = false;
+        if(type.equals("String")) return result;
+        double mean = getMean();
+        for(int i =0; i< count(); i++)
+        {
+            if(list.get(i).isEmpty())
+            {
+                setValue(i, "0");
+                result = true;
+            }
+        }
+        return result;
     }
 
     @Override

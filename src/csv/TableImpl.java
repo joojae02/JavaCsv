@@ -337,7 +337,26 @@ class TableImpl implements Table {
 
     @Override
     public Table shuffle() {
-        return null;
+        List<List<String>> oriList = new ArrayList<>();
+        for(int i = 0; i< getColumnCount(); i++)
+        {
+            List<String> t = new ArrayList<>();
+            for(int j = 0; j< getRowCount(); j++)
+                t.add(columnList.get(i).getValue(j));
+            oriList.add(t);
+        }
+        List<Map.Entry<Integer, String>> tmpList = new LinkedList<>();
+        for (int i = 0; i < getColumn(0).count(); i++) {
+            Map.Entry<Integer, String> entry = new AbstractMap.SimpleEntry<Integer, String>(i, getColumn(0).getValue(i));
+            tmpList.add(entry);
+        }
+        Collections.shuffle(tmpList);
+        for(int i = 0; i< getColumnCount(); i++)
+            for (int j = 0; j< getRowCount(); j++)
+            {
+                columnList.get(i).setValue(j, oriList.get(i).get(tmpList.get(j).getKey()));
+            }
+        return this;
     }
 
     @Override
@@ -367,12 +386,24 @@ class TableImpl implements Table {
 
     @Override
     public boolean fillNullWithMean() {
-        return false;
+        boolean result = false;
+        for(int i = 0; i < getColumnCount(); i++)
+        {
+            if(getColumn(i).fillNullWithMean())
+                result = true;
+        }
+        return result;
     }
 
     @Override
     public boolean fillNullWithZero() {
-        return false;
+        boolean result = false;
+        for(int i = 0; i < getColumnCount(); i++)
+        {
+            if(getColumn(i).fillNullWithZero())
+                result = true;
+        }
+        return result;
     }
 
     @Override
