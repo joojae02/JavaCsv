@@ -229,41 +229,108 @@ class TableImpl implements Table {
 
     @Override
     public Table sort(int byIndexOfColumn, boolean isAscending, boolean isNullFirst) {
-        List<ColumnImpl> oriList = new ArrayList<>(columnList);
+        List<List<String>> oriList = new ArrayList<>();
+        for(int i = 0; i< getColumnCount(); i++)
+        {
+            List<String> t = new ArrayList<>();
+            for(int j = 0; j< getRowCount(); j++)
+                t.add(columnList.get(i).getValue(j));
+            oriList.add(t);
+        }
+        List<Map.Entry<Integer, String>> tmpList = new LinkedList<>();
+        List<Map.Entry<Integer, String>> nulllist = new LinkedList<>();
+        List<Map.Entry<Integer, String>> resultList = new LinkedList<>();
 
-        Map<Integer, String> tmpMap = new LinkedHashMap<>();
-        Map<Integer, String> nullMap = new LinkedHashMap<>();
         for (int i = 0; i < columnList.get(byIndexOfColumn).count(); i++) {
-            if(columnList.get(byIndexOfColumn).getValue(i) == null)
+            Map.Entry<Integer,String> entry= new AbstractMap.SimpleEntry<Integer, String>(i, columnList.get(byIndexOfColumn).getValue(i));
+            if(entry.getValue().isEmpty())
             {
-                nullMap.put(i,columnList.get(byIndexOfColumn).getValue(i));
+                nulllist.add(entry);
             }
             else
             {
-                tmpMap.put(i,columnList.get(byIndexOfColumn).getValue(i));
+                tmpList.add(entry);
             }
         }
-        for(int i = 0; i< tmpMap.size(); i++)
-        {
-            System.out.println(tmpMap.get(i));
-        }
-        List<Map.Entry<Integer, String>> entries = new LinkedList<>(tmpMap.entrySet());
 
-        if(isAscending)
+        if(isAscending )
         {
-            Collections.sort(entries, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
-        }
-//        for(int i = 0; i< getRowCount(); i++)
-//        {
-//            for (int j = 0; j< getColumnCount(); j++)
-//                System.out.print(entries.get(i).getKey() +"," + entries.get(i).getValue());
-//            System.out.println();
-//        }
-
-        for(int i = 0; i< getRowCount(); i++)
-            for (int j = 0; j< getColumnCount(); j++)
+            if(columnList.get(byIndexOfColumn).isNumericColumn())
             {
-                getColumn(j).setValue(i, oriList.get(j).getValue(entries.get(i).getKey()));
+                Collections.sort(tmpList, new Comparator<Map.Entry<Integer, String>>() {
+                    @Override
+                    public int compare(Map.Entry<Integer, String> o1, Map.Entry<Integer, String> o2) {
+                        if (Double.parseDouble(o1.getValue()) < Double.parseDouble(o2.getValue()))
+                            return -1;
+                        else if (Double.parseDouble(o1.getValue()) > Double.parseDouble(o2.getValue()))
+                            return 1;
+                        else
+                            return 0;
+                    }
+                });
+            }
+            else
+            {
+                Collections.sort(tmpList, new Comparator<Map.Entry<Integer, String>>() {
+                    @Override
+                    public int compare(Map.Entry<Integer, String> o1, Map.Entry<Integer, String> o2) {
+                        if (o1.getValue().compareTo(o2.getValue()) < 0)
+                            return -1;
+                        else if (o1.getValue().compareTo(o2.getValue()) > 0)
+                            return 1;
+                        else
+                            return 0;
+                    }
+                });
+            }
+        }
+        else
+        {
+            if(columnList.get(byIndexOfColumn).isNumericColumn())
+            {
+                Collections.sort(tmpList, new Comparator<Map.Entry<Integer, String>>() {
+                    @Override
+                    public int compare(Map.Entry<Integer, String> o1, Map.Entry<Integer, String> o2) {
+                        if (Double.parseDouble(o1.getValue()) < Double.parseDouble(o2.getValue()))
+                            return 1;
+                        else if (Double.parseDouble(o1.getValue()) > Double.parseDouble(o2.getValue()))
+                            return -1;
+                        else
+                            return 0;
+                    }
+                });
+            }
+            else
+            {
+                Collections.sort(tmpList, new Comparator<Map.Entry<Integer, String>>() {
+                    @Override
+                    public int compare(Map.Entry<Integer, String> o1, Map.Entry<Integer, String> o2) {
+                        if (o1.getValue().compareTo(o2.getValue()) < 0)
+                            return 1;
+                        else if (o1.getValue().compareTo(o2.getValue()) > 0)
+                            return -1;
+                        else
+                            return 0;
+                    }
+                });
+            }
+        }
+        if(isNullFirst)
+        {
+            resultList.addAll(nulllist);
+            resultList.addAll(tmpList);
+        }
+        else
+        {
+            resultList.addAll(tmpList);
+            resultList.addAll(nulllist);
+        }
+
+
+        for(int i = 0; i< getColumnCount(); i++)
+            for (int j = 0; j< getRowCount(); j++)
+            {
+                columnList.get(i).setValue(j, oriList.get(i).get(resultList.get(j).getKey()));
             }
         return this;
     }

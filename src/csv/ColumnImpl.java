@@ -99,7 +99,7 @@ class ColumnImpl implements Column {
     }
     @Override
     public boolean isNumericColumn() {
-        if(getNumericCount() == count())
+        if(getNumericCount() == getSize())
             return true;
         else
             return false;
