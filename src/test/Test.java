@@ -124,7 +124,7 @@ public class Test {
 //        System.out.println("****************************** after standardization ******************************");
 //        table.print();
 //        table.getStats().print();
-
+//
 //        18) (가능한 컬럼에 대하여) table 컬럼마다 min 0, max 1로 정규화한다 (원본 테이블 값 변경)
 //        System.out.println("****************************** before normalization ******************************");
 //        table.print();

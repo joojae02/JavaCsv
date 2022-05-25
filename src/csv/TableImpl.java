@@ -73,8 +73,8 @@ class TableImpl implements Table {
         tmpList.get(5).add("25%");tmpList.get(6).add("50%");tmpList.get(7).add("75%");tmpList.get(8).add("max");
         for(int i = 0; i< columnList.size(); i++) {
             try{
-                tmpList.get(2).add(String.valueOf(columnList.get(i).getMean()));
-                tmpList.get(3).add(String.valueOf(columnList.get(i).getStd()));
+                tmpList.get(2).add(String.valueOf(Math.round(columnList.get(i).getMean() *1000000) / 1000000.0   ));
+                tmpList.get(3).add(String.valueOf(Math.round(columnList.get(i).getStd() *1000000) / 1000000.0));
                 tmpList.get(4).add(String.valueOf(columnList.get(i).getNumericMin()));
                 tmpList.get(5).add(String.valueOf(columnList.get(i).getQ1()));
                 tmpList.get(6).add(String.valueOf(columnList.get(i).getMedian()));
@@ -84,7 +84,6 @@ class TableImpl implements Table {
                 tmpList.get(1).add(String.valueOf(columnList.get(i).getNumericCount()));
             }
             catch (NumberFormatException e) {
-                System.out.println(i+ ", "+ e );
             }
         }
 
@@ -224,6 +223,9 @@ class TableImpl implements Table {
 
     @Override
     public <T> Table selectRowsBy(String columnName, Predicate<T> predicate) {
+        Column selectColumn = getColumn(columnName);
+        //predicate.test(selectColumn.getValue(i));
+
         return null;
     }
 
@@ -408,16 +410,35 @@ class TableImpl implements Table {
 
     @Override
     public boolean standardize() {
-        return false;
+        boolean result = false;
+        for(int i = 0; i < getColumnCount(); i++)
+        {
+            if(getColumn(i).standardize())
+                result = true;
+        }
+        return result;
     }
 
     @Override
     public boolean normalize() {
-        return false;
+
+        boolean result = false;
+        for(int i = 0; i < getColumnCount(); i++)
+        {
+            if(getColumn(i).normalize())
+                result = true;
+        }
+        return result;
     }
 
     @Override
     public boolean factorize() {
-        return false;
+        boolean result = false;
+        for(int i = 0; i < getColumnCount(); i++)
+        {
+            if(getColumn(i).factorize())
+                result = true;
+        }
+        return result;
     }
 }

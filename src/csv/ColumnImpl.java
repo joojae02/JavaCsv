@@ -1,5 +1,6 @@
 package csv;
 
+import javax.management.StringValueExp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,6 +73,7 @@ class ColumnImpl implements Column {
     {
         return type;
     }
+
     public void findType()
     {
         if(isNumericColumn())
@@ -196,7 +198,7 @@ class ColumnImpl implements Column {
             }
         }
 
-        return Math.round(sum /(double)getNumericCount()* 1000000 ) / 1000000.0;
+        return sum /(double)getNumericCount();
     }
 
     @Override
@@ -216,7 +218,7 @@ class ColumnImpl implements Column {
                 catch (NumberFormatException e) {}
             }
         }
-        return Math.round( Math.sqrt(sum /(double)getNumericCount()) * 1000000 ) / 1000000.0;
+        return Math.sqrt(sum /(double)getNumericCount());
     }
 
     public double q1q2q3(double q)
@@ -238,7 +240,7 @@ class ColumnImpl implements Column {
         double index = q * (tmp.size() - 1);
         int low = (int)Math.floor(index);
         double r = tmp.get(low) + (index - low) * (tmp.get(low + 1) - tmp.get(low));
-        return Math.round((r * 1000000)) / 1000000.0;
+        return r;
     }
 
     @Override
@@ -291,16 +293,76 @@ class ColumnImpl implements Column {
 
     @Override
     public boolean standardize() {
-        return false;
+        boolean result = false;
+        if(type.equals("String")) return result;
+        double mean = getMean();
+        double std = getStd();
+        for(int i = 0; i< count(); i++)
+        {
+            if(!list.get(i).isEmpty())
+            {
+                setValue(i, String.valueOf(Math.round((Double.parseDouble(getValue(i)) - mean) / std * 1000000 ) / 1000000.0) );
+                result = true;
+            }
+        }
+        type = "double";
+        return result;
     }
 
     @Override
     public boolean normalize() {
-        return false;
+        boolean result = false;
+        if(type.equals("String")) return result;
+        double max = getNumericMax();
+        double min = getNumericMin();
+        for(int i = 0; i< count(); i++)
+        {
+            if(!list.get(i).isEmpty())
+            {
+                setValue(i, String.valueOf(Math.round((Double.parseDouble(getValue(i)) - min) / (max - min) * 1000000 ) / 1000000.0) );
+                result = true;
+            }
+        }
+        type = "double";
+        return result;
     }
 
     @Override
     public boolean factorize() {
-        return false;
+        List<String> tmpList = new ArrayList<>();
+        boolean twoElement = true;
+        for(int i  =0; i< count(); i++)
+        {
+            String tmp = getValue(i);
+            if(!tmp.isEmpty())
+            {
+                int check = 0;
+                for(String s: tmpList)
+                {
+                    if(!tmp.equals(s))
+                        check++;
+                }
+                if(check == tmpList.size())
+                    tmpList.add(tmp);
+                if(tmpList.size() > 2)
+                {
+                    twoElement = false;
+                    break;
+                }
+            }
+        }
+        if(twoElement)
+        {
+            for(int i  =0; i< count(); i++)
+            {
+                if(getValue(i).equals(tmpList.get(0)))
+                    setValue(i, "1");
+                else
+                    setValue(i, "0");
+            }
+            type = "int";
+        }
+        return twoElement;
     }
+
 }
