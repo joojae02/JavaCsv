@@ -30,6 +30,17 @@ class ColumnImpl implements Column {
 
     @Override
     public <T extends Number> T getValue(int index, Class<T> t) {
+        try{
+            if(t == Integer.class || t == Double.class)
+            {
+                return t.cast(getValue(index)) ;
+            }
+            else
+                throw new NumberFormatException();
+        }
+        catch (NumberFormatException e){
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -53,6 +64,16 @@ class ColumnImpl implements Column {
 
     @Override
     public void print() {
+        System.out.printf(String.format(" %%%ds \n",getLength()),getHeader());
+        for(int i = 0; i < count();  i++)
+        {
+            String tmp;
+            if(getValue(i).isEmpty())
+                tmp = null;
+            else
+                tmp = getValue(i);
+            System.out.printf(String.format(" %%%ds \n",getLength()),tmp);
+        }
 
 
     }
