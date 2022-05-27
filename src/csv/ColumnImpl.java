@@ -31,15 +31,20 @@ class ColumnImpl implements Column {
     @Override
     public <T extends Number> T getValue(int index, Class<T> t) {
         try{
-            if(t == Integer.class || t == Double.class)
-            {
-                return t.cast(getValue(index)) ;
+            if(!getValue(index).isEmpty()){
+                if(t.equals(Integer.class))
+                {
+                    return (T) (Integer) Integer.parseInt(getValue(index));
+                }
+                else if(t.equals(Double.class))
+                {
+                    return (T) (Double) Double.parseDouble(getValue(index));
+                }
+                else
+                    throw new NumberFormatException();
             }
-            else
-                throw new NumberFormatException();
         }
         catch (NumberFormatException e){
-            e.printStackTrace();
         }
         return null;
     }

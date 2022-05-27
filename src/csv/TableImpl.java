@@ -224,9 +224,42 @@ class TableImpl implements Table {
     @Override
     public <T> Table selectRowsBy(String columnName, Predicate<T> predicate) {
         Column selectColumn = getColumn(columnName);
-        //predicate.test(selectColumn.getValue(i));
+        List<Integer> rowList = new ArrayList<>();
+        List<List<String>> returnList = new ArrayList<>();
+        for (int i = 0; i < selectColumn.count(); i++) {
+            try {
+                String selectValue = selectColumn.getValue(i);
+                if (predicate.test((T) (selectValue.isEmpty() ? null: selectValue)))
+                    rowList.add(i);
+            } catch (ClassCastException e) {
+                if (!selectColumn.getValue(i).isEmpty()) {
+                    try {
+                        if (predicate.test((T) (Double) Double.parseDouble(selectColumn.getValue(i))))
+                            rowList.add(i);
+                    } catch (Exception e1) {
+                        try {
+                            if (predicate.test((T) (Integer) Integer.parseInt(selectColumn.getValue(i))))
+                                rowList.add(i);
+                        } catch (NumberFormatException e2) {}
+                    }
+                }
+            }
+        }
+        returnList.add(new ArrayList<>());
+        for (int i = 0; i< getColumnCount(); i++)
+            returnList.get(0).add(getColumn(i).getHeader());
 
-        return null;
+        for (int j: rowList)
+        {
+            List<String> tmp = new ArrayList<>();
+            for(int i = 0; i< getColumnCount(); i++) {
+                tmp.add(columnList.get(i).getValue(j));
+
+            }
+            returnList.add(tmp);
+        }
+        Table select = new TableImpl(returnList);
+        return select;
     }
 
     @Override
@@ -407,7 +440,7 @@ class TableImpl implements Table {
         }
         return result;
     }
-
+///////////////////////////////////////////////////////////////////
     @Override
     public boolean standardize() {
         boolean result = false;
