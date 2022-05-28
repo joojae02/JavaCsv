@@ -29,14 +29,6 @@ public class CSVs {
             return null;
         }
 
-//        for(int i = 0; i < list.size();i++)
-//        {
-//            for(int j = 0; j < list.get(i).size(); j++)
-//            {
-//                System.out.print(list.get(i).get(j) + " / ");
-//            }
-//            System.out.println();
-//        }
         Table table = new TableImpl(list);
 
         return table;

@@ -11,15 +11,14 @@ class ColumnImpl implements Column {
     private List<String> list;
     private String type;
 
-    public ColumnImpl(List<String> list, String header)
-    {
+    public ColumnImpl(List<String> list, String header) {
         this.header = header;
         this.list = list;
         findType();
 
     }
-    public String getHeader()
-    {
+
+    public String getHeader() {
         return header;
     }
 
@@ -30,85 +29,76 @@ class ColumnImpl implements Column {
 
     @Override
     public <T extends Number> T getValue(int index, Class<T> t) {
-        try{
-            if(!getValue(index).isEmpty()){
-                if(t.equals(Integer.class))
-                {
+        try {
+            if (!getValue(index).isEmpty()) {
+                if (t.equals(Integer.class)) {
                     return (T) (Integer) Integer.parseInt(getValue(index));
-                }
-                else if(t.equals(Double.class))
-                {
+                } else if (t.equals(Double.class)) {
                     return (T) (Double) Double.parseDouble(getValue(index));
-                }
-                else
+                } else
                     throw new NumberFormatException();
             }
-        }
-        catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
         }
         return null;
     }
 
     @Override
     public void setValue(int index, String value) {
-        list.set(index,value);
+        list.set(index, value);
     }
 
     @Override
     public <T extends Number> void setValue(int index, T value) {
-        list.set(index,value.toString());
+        list.set(index, value.toString());
     }
 
     @Override
     public int count() {
         return list.size();
     }
+
     public int getSize() {
-        return list.size() - (int)getNullCount();
+        return list.size() - (int) getNullCount();
     }
 
     @Override
     public void print() {
-        System.out.printf(String.format(" %%%ds \n",getLength()),getHeader());
-        for(int i = 0; i < count();  i++)
-        {
+        System.out.printf(String.format(" %%%ds \n", getLength()), getHeader());
+        for (int i = 0; i < count(); i++) {
             String tmp;
-            if(getValue(i).isEmpty())
+            if (getValue(i).isEmpty())
                 tmp = null;
             else
                 tmp = getValue(i);
-            System.out.printf(String.format(" %%%ds \n",getLength()),tmp);
+            System.out.printf(String.format(" %%%ds \n", getLength()), tmp);
         }
 
 
     }
-    public int getLength()
-    {
-     int maxLength = header.length();
-     for(String s: list)
-     {
-         int tmp = s.length();
-         if(s.isEmpty())
-             tmp = 4;
-         if(tmp > maxLength)
-             maxLength = tmp;
-     }
-     return maxLength;
+
+    public int getLength() {
+        int maxLength = header.length();
+        for (String s : list) {
+            int tmp = s.length();
+            if (s.isEmpty())
+                tmp = 4;
+            if (tmp > maxLength)
+                maxLength = tmp;
+        }
+        return maxLength;
     }
-    public String  getType()
-    {
+
+    public String getType() {
         return type;
     }
 
-    public void findType()
-    {
-        if(isNumericColumn())
-        {
+    public void findType() {
+        if (isNumericColumn()) {
             boolean isInt = true;
 
-            for(int i = 0; i< list.size(); i++)
-            {
-                if(list.get(i).isEmpty() != true) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).isEmpty() != true) {
                     try {
                         Integer.parseInt(list.get(i));
                     } catch (NumberFormatException e) {
@@ -117,17 +107,17 @@ class ColumnImpl implements Column {
                     }
                 }
             }
-            if(isInt)
+            if (isInt)
                 type = "int";
             else
                 type = "double";
-        }
-        else
+        } else
             type = "String";
     }
+
     @Override
     public boolean isNumericColumn() {
-        if(getNumericCount() == getSize())
+        if (getNumericCount() == getSize())
             return true;
         else
             return false;
@@ -136,9 +126,8 @@ class ColumnImpl implements Column {
     @Override
     public long getNullCount() {
         long count = 0;
-        for(String s : list)
-        {
-            if(s.isEmpty())
+        for (String s : list) {
+            if (s.isEmpty())
                 count++;
         }
         return count;
@@ -147,9 +136,8 @@ class ColumnImpl implements Column {
     @Override
     public long getNumericCount() {
         long count = 0;
-        for(String s: list)
-        {
-            if(s.isEmpty() != true) {
+        for (String s : list) {
+            if (s.isEmpty() != true) {
                 try {
                     Double.parseDouble(s);
                     count++;
@@ -161,10 +149,10 @@ class ColumnImpl implements Column {
     }
 
     @Override
-    public double getNumericMin(){
-        if(getNumericCount() == 0)
+    public double getNumericMin() {
+        if (getNumericCount() == 0)
             throw new NumberFormatException();
-        for(int i = 0 ; ;i++) {
+        for (int i = 0; ; i++) {
             try {
                 double min = Double.parseDouble(list.get(i));
                 for (String s : list) {
@@ -178,17 +166,16 @@ class ColumnImpl implements Column {
                     }
                 }
                 return min;
+            } catch (NumberFormatException e) {
             }
-            catch (NumberFormatException e)
-            {}
         }
     }
 
     @Override
-    public double getNumericMax(){
-        if(getNumericCount() == 0)
+    public double getNumericMax() {
+        if (getNumericCount() == 0)
             throw new NumberFormatException();
-        for(int i = 0 ; ;i++) {
+        for (int i = 0; ; i++) {
             try {
                 double max = Double.parseDouble(list.get(i));
                 for (String s : list) {
@@ -202,69 +189,61 @@ class ColumnImpl implements Column {
                     }
                 }
                 return max;
+            } catch (NumberFormatException e) {
             }
-            catch (NumberFormatException e)
-            {}
         }
     }
 
     @Override
     public double getMean() {
-        if(getNumericCount() == 0)
+        if (getNumericCount() == 0)
             throw new NumberFormatException();
         double sum = 0;
-        for(String s: list)
-        {
-            if(s.isEmpty() != true)
-            {
-                try{
+        for (String s : list) {
+            if (s.isEmpty() != true) {
+                try {
                     sum += Double.parseDouble(s);
+                } catch (NumberFormatException e) {
                 }
-                catch (NumberFormatException e) {}
             }
         }
 
-        return sum /(double)getNumericCount();
+        return sum / (double) getNumericCount();
     }
 
     @Override
     public double getStd() {
-        if(getNumericCount() == 0)
+        if (getNumericCount() == 0)
             throw new NumberFormatException();
         double mean = getMean();
         double sum = 0;
 
-        for(String s: list)
-        {
-            if(s.isEmpty() != true)
-            {
-                try{
-                    sum += Math.pow(Double.parseDouble(s) - mean,2);
+        for (String s : list) {
+            if (s.isEmpty() != true) {
+                try {
+                    sum += Math.pow(Double.parseDouble(s) - mean, 2);
+                } catch (NumberFormatException e) {
                 }
-                catch (NumberFormatException e) {}
             }
         }
-        return Math.sqrt(sum /(double)getNumericCount());
+        return Math.sqrt(sum / (double) getNumericCount());
     }
 
-    public double q1q2q3(double q)
-    {
-        if(getNumericCount() == 0)
+    public double q1q2q3(double q) {
+        if (getNumericCount() == 0)
             throw new NumberFormatException();
         List<Double> tmp = new ArrayList<>();
-        for(String s: list)
-        {
-            try{
-                if(s.isEmpty() != true) {
+        for (String s : list) {
+            try {
+                if (s.isEmpty() != true) {
                     tmp.add(Double.parseDouble(s));
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
             }
         }
         Collections.sort(tmp);
         double index = q * (tmp.size() - 1);
-        int low = (int)Math.floor(index);
+        int low = (int) Math.floor(index);
         double r = tmp.get(low) + (index - low) * (tmp.get(low + 1) - tmp.get(low));
         return r;
     }
@@ -287,12 +266,10 @@ class ColumnImpl implements Column {
     @Override
     public boolean fillNullWithMean() {
         boolean result = false;
-        if(type.equals("String")) return result;
+        if (type.equals("String")) return result;
         double mean = getMean();
-        for(int i =0; i< count(); i++)
-        {
-            if(list.get(i).isEmpty())
-            {
+        for (int i = 0; i < count(); i++) {
+            if (list.get(i).isEmpty()) {
                 setValue(i, String.valueOf(mean));
                 result = true;
                 type = "double";
@@ -304,12 +281,10 @@ class ColumnImpl implements Column {
     @Override
     public boolean fillNullWithZero() {
         boolean result = false;
-        if(type.equals("String")) return result;
+        if (type.equals("String")) return result;
         double mean = getMean();
-        for(int i =0; i< count(); i++)
-        {
-            if(list.get(i).isEmpty())
-            {
+        for (int i = 0; i < count(); i++) {
+            if (list.get(i).isEmpty()) {
                 setValue(i, "0");
                 result = true;
             }
@@ -320,14 +295,12 @@ class ColumnImpl implements Column {
     @Override
     public boolean standardize() {
         boolean result = false;
-        if(type.equals("String")) return result;
+        if (type.equals("String")) return result;
         double mean = getMean();
         double std = getStd();
-        for(int i = 0; i< count(); i++)
-        {
-            if(!list.get(i).isEmpty())
-            {
-                setValue(i, String.valueOf(Math.round((Double.parseDouble(getValue(i)) - mean) / std * 1000000 ) / 1000000.0) );
+        for (int i = 0; i < count(); i++) {
+            if (!list.get(i).isEmpty()) {
+                setValue(i, String.valueOf(Math.round((Double.parseDouble(getValue(i)) - mean) / std * 1000000) / 1000000.0));
                 result = true;
             }
         }
@@ -338,14 +311,12 @@ class ColumnImpl implements Column {
     @Override
     public boolean normalize() {
         boolean result = false;
-        if(type.equals("String")) return result;
+        if (type.equals("String")) return result;
         double max = getNumericMax();
         double min = getNumericMin();
-        for(int i = 0; i< count(); i++)
-        {
-            if(!list.get(i).isEmpty())
-            {
-                setValue(i, String.valueOf(Math.round((Double.parseDouble(getValue(i)) - min) / (max - min) * 1000000 ) / 1000000.0) );
+        for (int i = 0; i < count(); i++) {
+            if (!list.get(i).isEmpty()) {
+                setValue(i, String.valueOf(Math.round((Double.parseDouble(getValue(i)) - min) / (max - min) * 1000000) / 1000000.0));
                 result = true;
             }
         }
@@ -357,31 +328,25 @@ class ColumnImpl implements Column {
     public boolean factorize() {
         List<String> tmpList = new ArrayList<>();
         boolean twoElement = true;
-        for(int i  =0; i< count(); i++)
-        {
+        for (int i = 0; i < count(); i++) {
             String tmp = getValue(i);
-            if(!tmp.isEmpty())
-            {
+            if (!tmp.isEmpty()) {
                 int check = 0;
-                for(String s: tmpList)
-                {
-                    if(!tmp.equals(s))
+                for (String s : tmpList) {
+                    if (!tmp.equals(s))
                         check++;
                 }
-                if(check == tmpList.size())
+                if (check == tmpList.size())
                     tmpList.add(tmp);
-                if(tmpList.size() > 2)
-                {
+                if (tmpList.size() > 2) {
                     twoElement = false;
                     break;
                 }
             }
         }
-        if(twoElement)
-        {
-            for(int i  =0; i< count(); i++)
-            {
-                if(getValue(i).equals(tmpList.get(0)))
+        if (twoElement) {
+            for (int i = 0; i < count(); i++) {
+                if (getValue(i).equals(tmpList.get(0)))
                     setValue(i, "1");
                 else
                     setValue(i, "0");

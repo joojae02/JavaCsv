@@ -158,12 +158,12 @@ public class Test {
 //        System.out.println("*** after setValue(index, T value)");
 //        table.selectRowsAt(rowIndex).print();
 
-        System.out.println("*** before getValue(index, T value)");
-        int columnIndex = (int) (Math.random() * table.getColumnCount());
-        int rowIndex = (int) (Math.random() * table.getColumn(columnIndex).count());
-        String columnName = table.getColumn(columnIndex).getHeader();
-        table.selectRowsAt(rowIndex).print();
-        int value = table.getColumn(columnName).getValue(rowIndex, Integer.class);
-        System.out.println("The value in (" + rowIndex + ", " + columnIndex + ") is " + value);
+//        System.out.println("*** before getValue(index, T value)");
+//        int columnIndex = (int) (Math.random() * table.getColumnCount());
+//        int rowIndex = (int) (Math.random() * table.getColumn(columnIndex).count());
+//        String columnName = table.getColumn(columnIndex).getHeader();
+//        table.selectRowsAt(rowIndex).print();
+//        int value = table.getColumn(columnName).getValue(rowIndex, Integer.class);
+//        System.out.println("The value in (" + rowIndex + ", " + columnIndex + ") is " + value);
     }
 }
