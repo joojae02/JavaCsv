@@ -7,8 +7,42 @@ import java.util.function.Predicate;
 class TableImpl implements Table {
     private List<ColumnImpl> columnList = new ArrayList<>();
 
+    public TableImpl(List<List<String>> list, boolean isFirstLineHeader) {
+        List<List<String>> tmpList = new ArrayList<>();
+
+        if(isFirstLineHeader)
+        {
+            for (int i = 0; i < list.get(0).size(); i++)//
+            {
+                List<String> tmp = new ArrayList<>();
+                for (int j = 1; j < list.size(); j++)
+                    tmp.add(list.get(j).get(i));
+                tmpList.add(tmp);
+            }
+            for (int i = 0; i < list.get(0).size(); i++) {
+                ColumnImpl column = new ColumnImpl(tmpList.get(i), list.get(0).get(i));
+                columnList.add(column);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < list.get(0).size(); i++)//
+            {
+                List<String> tmp = new ArrayList<>();
+                for (int j = 0; j < list.size(); j++)
+                    tmp.add(list.get(j).get(i));
+                tmpList.add(tmp);
+            }
+            for (int i = 0; i < list.get(0).size(); i++) {
+                ColumnImpl column = new ColumnImpl(tmpList.get(i), null);
+                columnList.add(column);
+            }
+        }
+
+    }
     public TableImpl(List<List<String>> list) {
         List<List<String>> tmpList = new ArrayList<>();
+
         for (int i = 0; i < list.get(0).size(); i++)//
         {
             List<String> tmp = new ArrayList<>();

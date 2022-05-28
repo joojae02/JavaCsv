@@ -29,7 +29,7 @@ public class CSVs {
             return null;
         }
 
-        Table table = new TableImpl(list);
+        Table table = new TableImpl(list, isFirstLineHeader);
 
         return table;
     }
