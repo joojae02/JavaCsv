@@ -265,7 +265,8 @@ class ColumnImpl implements Column {
     @Override
     public boolean fillNullWithMean() {
         boolean result = false;
-        if (type.equals("String")) return result;
+        if (type.equals("String"))
+            return result;
         double mean = getMean();
         for (int i = 0; i < count(); i++) {
             if (list.get(i).isEmpty()) {
@@ -280,8 +281,8 @@ class ColumnImpl implements Column {
     @Override
     public boolean fillNullWithZero() {
         boolean result = false;
-        if (type.equals("String")) return result;
-        double mean = getMean();
+        if (type.equals("String"))
+            return false;
         for (int i = 0; i < count(); i++) {
             if (list.get(i).isEmpty()) {
                 setValue(i, "0");
@@ -294,7 +295,8 @@ class ColumnImpl implements Column {
     @Override
     public boolean standardize() {
         boolean result = false;
-        if (type.equals("String")) return result;
+        if (type.equals("String"))
+            return false;
         double mean = getMean();
         double std = getStd();
         for (int i = 0; i < count(); i++) {
@@ -310,16 +312,17 @@ class ColumnImpl implements Column {
     @Override
     public boolean normalize() {
         boolean result = false;
-        if (type.equals("String")) return result;
+        if (type.equals("String"))
+            return false;
         double max = getNumericMax();
         double min = getNumericMin();
         for (int i = 0; i < count(); i++) {
             if (!list.get(i).isEmpty()) {
                 setValue(i, String.valueOf(Math.round((Double.parseDouble(getValue(i)) - min) / (max - min) * 1000000) / 1000000.0));
                 result = true;
+                type = "double";
             }
         }
-        type = "double";
         return result;
     }
 
