@@ -141,7 +141,7 @@ public class Test {
 //        table.print();
 
 //        20) 조건식을 만족하는 행을 얻는다.
-        table.selectRowsBy("Name", (String x) -> x.contains("Lee")).print();
+//        table.selectRowsBy("Name", (String x) -> x.contains("Lee")).print();
 //        table.selectRowsBy("Age", (Integer x) -> x < 20).print();
 //        table.selectRowsBy("Fare", (Double x) -> x < 20).print();
 //        table.selectRowsBy("Cabin", (String x) -> x.length() < 3).print();
@@ -159,12 +159,12 @@ public class Test {
 //        table.selectRowsAt(rowIndex).print();
 
 
-//        System.out.println("*** before getValue(index, T value)");
-//        int columnIndex = (int) (Math.random() * table.getColumnCount());
-//        int rowIndex = (int) (Math.random() * table.getColumn(columnIndex).count());
-//        String columnName = table.getColumn(columnIndex).getHeader();
-//        table.selectRowsAt(rowIndex).print();
-//        int value = table.getColumn(columnName).getValue(rowIndex, Integer.class);
-//        System.out.println("The value in (" + rowIndex + ", " + columnIndex + ") is " + value);
+        System.out.println("*** before getValue(index, T value)");
+        int columnIndex = (int) (Math.random() * table.getColumnCount());
+        int rowIndex = (int) (Math.random() * table.getColumn(columnIndex).count());
+        String columnName = table.getColumn(columnIndex).getHeader();
+        table.selectRowsAt(rowIndex).print();
+        int value = table.getColumn(columnName).getValue(rowIndex, Integer.class);
+        System.out.println("The value in (" + rowIndex + ", " + columnIndex + ") is " + value);
     }
 }
