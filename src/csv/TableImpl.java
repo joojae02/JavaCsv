@@ -58,12 +58,12 @@ class TableImpl implements Table {
 
     @Override
     public String toString() {
-        String result = this.getClass() + "@" + Integer.toHexString(this.hashCode()) + ">\n"
-                + "RangeIndex: " + columnList.get(0).getSize() + " entries, 0 to " + (columnList.get(0).getSize() - 1) + "\n"
-                + "Data columns" + "(total " + columnList.size() + "columns) :\n"
-                + String.format(" %s |%11s | %6s %8s | %6s\n", "#", "Columns", "Count", "Non-Null", "Dtype");
+        String result =  "<"+ this.getClass().getName() + "@" + Integer.toHexString(hashCode()) + ">\n"
+                + "RangeIndex: " + getColumn(0).count() + " entries, 0 to " + (columnList.get(0).getSize() - 1) + "\n"
+                + "Data columns" + "(total " + columnList.size() + " columns) :\n"
+                + String.format(" %s | %11s | %6s %8s | %6s\n", " #", "Columns", "Count", "Non-Null", "Dtype");
         for (int i = 0; i < columnList.size(); i++) {
-            result += String.format(" %d | %11s | %6s %8s | %6s\n", i, columnList.get(i).getHeader(), columnList.get(i).getSize(),
+            result += String.format(" %2d | %11s | %6s %8s | %6s\n", i, columnList.get(i).getHeader(), columnList.get(i).getSize(),
                     (columnList.get(i).getSize() != columnList.get(i).getNullCount()) ? "non-null" : "null", columnList.get(i).getType());
         }
         return result;
@@ -255,12 +255,14 @@ class TableImpl implements Table {
         List<Integer> rowList = new ArrayList<>();
         List<List<String>> returnList = new ArrayList<>();
         for (int i = 0; i < selectColumn.count(); i++) {
+            String selectValue = selectColumn.getValue(i);
             try {
-                String selectValue = selectColumn.getValue(i);
-                if (predicate.test((T) (selectValue.isEmpty() ? null : selectValue)))
+                if(selectValue.isEmpty())
+                    selectValue = null;
+                if (predicate.test((T) selectValue))
                     rowList.add(i);
-            } catch (ClassCastException e) {
-                if (!selectColumn.getValue(i).isEmpty()) {
+            } catch (Exception e) {
+                if (selectValue != null) {
                     try {
                         if (predicate.test((T) (Double) Double.parseDouble(selectColumn.getValue(i))))
                             rowList.add(i);

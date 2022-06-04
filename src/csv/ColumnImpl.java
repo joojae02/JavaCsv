@@ -29,17 +29,15 @@ class ColumnImpl implements Column {
 
     @Override
     public <T extends Number> T getValue(int index, Class<T> t) {
-
-        if (!getValue(index).isEmpty()) {
+        if (getValue(index).isEmpty())
+            throw new NullPointerException();
+        else
             if (t.equals(Integer.class)) {
                 return (T) (Integer) Integer.parseInt(getValue(index));
             } else if (t.equals(Double.class)) {
                 return (T) (Double) Double.parseDouble(getValue(index));
             } else
                 throw new NumberFormatException();
-        }
-
-        return null;
     }
 
     @Override
